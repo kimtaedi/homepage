@@ -335,7 +335,7 @@ window.addEventListener("load", function() {
     //note that everything must be passed as an array, so the brakets ['...'] are important.
 
     // Apply to the main document
-    animateCursor(['snoopy-frame1.png', 'snoopy-frame2.png']);
+    animateCursor(['dumpling.png']);
 
     // Example: Apply a static cursor to a specific iframe (replace 'myIframeId' with your iframe's ID)
     // const mySpecificIframe = document.getElementById('myIframeId');
@@ -352,6 +352,6 @@ window.addEventListener("load", function() {
     // Existing examples for main document (uncomment to use)
     // animateCursorForElement(['Custom/sparkle/CursorStarSparkle-frame1.png', 'Custom/sparkle/CursorStarSparkle-frame2.png', 'Custom/sparkle/CursorStarSparkle-frame3.png', 'Custom/sparkle/CursorStarSparkle-frame4.png', 'Custom/sparkle/CursorStarSparkle-frame5.png', 'Custom/sparkle/CursorStarSparkle-frame6.png', 'Custom/sparkle/CursorStarSparkle-frame7.png', 'Custom/sparkle/CursorStarSparkle-frame8.png', 'Custom/sparkle/CursorStarSparkle-frame9.png', 'Custom/sparkle/CursorStarSparkle-frame10.png', 'Custom/sparkle/CursorStarSparkle-frame11.png', 'Custom/sparkle/CursorStarSparkle-frame12.png', 'Custom/sparkle/CursorStarSparkle-frame13.png', 'Custom/sparkle/CursorStarSparkle-frame14.png', 'Custom/sparkle/CursorStarSparkle-frame15.png', 'Custom/sparkle/CursorStarSparkle-frame16.png', 'Custom/sparkle/CursorStarSparkle-frame17.png', 'Custom/sparkle/CursorStarSparkle-frame18.png', 'Custom/sparkle/CursorStarSparkle-frame19.png', 'Custom/sparkle/CursorStarSparkle-frame20.png'], "li");
     // animateCursorForElement(['Custom/cupcakecursor/cupcakecursor_frame1.png', 'Custom/cupcakecursor/cupcakecursor_frame2.png', 'Custom/cupcakecursor/cupcakecursor_frame3.png'], "strong");
-    // animateCursorForElement(['Custom/snoopy-frame1.png', 'Custom/snoopy-frame2.png'], "h1");
-    // animateCursorForElement(['Custom/snoopy-frame1.png', 'Custom/snoopy-frame2.png'], "a");
+    // animateCursorForElement(['Custom/spling.png'], "h1");
+    // animateCursorForElement(['Custom/dumpling.png'], "a");
 });
