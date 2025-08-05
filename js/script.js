@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingSpinner = document.getElementById('loading-spinner'); // 로딩 스피너
     const loadingOverlay = document.getElementById('loading-overlay'); // 로딩 오버레이
     const clickableDiv = document.getElementById('about-container'); // 'ABOUT' 링크 컨테이너
+    const mainDiv = document.getElementById('main-container'); // 'main' 링크 컨테이너
     const myIframe = document.getElementById('content-frame'); // 콘텐츠를 표시할 iframe
     const searchContainer = document.querySelector('.search-container'); // 검색 컨테이너
 
@@ -250,6 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
         myIframe.src = 'about.html'; // iframe의 src를 'about.html'로 변경
     });
 
+    // 'main' 링크 컨테이너 클릭 시 iframe src 변경
+mainDiv.addEventListener('click', function() {
+    myIframe.src = 'main.html';
+});
+
+
+    
     // 태그 필터 드롭다운 변경 시 이벤트 리스너
     tagFilterSelect.addEventListener('change', () => {
         searchInput.value = ''; // 태그 필터 변경 시 검색 입력창 초기화
