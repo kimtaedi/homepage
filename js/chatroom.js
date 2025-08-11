@@ -134,28 +134,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 채팅방 토글 함수 (열기/닫기) ---
     function toggleChatroom() {
-        if (isChatOpen) { // 채팅방이 열려 있으면
-            chatroomContainer.classList.remove('open'); // 'open' 클래스 제거하여 닫기
-            chatroomHeaderTitle.textContent = '방명록'; // 헤더 제목 변경
-        } else { // 채팅방이 닫혀 있으면
-            chatroomContainer.classList.add('open'); // 'open' 클래스 추가하여 열기
-            
-            // 현재 사용자 정보 업데이트
-            currentUser.username = usernameInput.value.trim();
-            currentUser.age = ageInput.value.trim();
-            currentUser.location = locationInput.value.trim();
-            
-            assignUserColor(); // 사용자 색상 할당 (다시 확인)
-            currentUser.colorClass = colorMap.get(currentUser.username) || ''; // 할당된 색상 클래스 가져오기
+    if (isChatOpen) { 
+        chatroomContainer.classList.remove('open'); 
+    } else { 
+        chatroomContainer.classList.add('open'); 
+        
+        // 현재 사용자 정보 업데이트
+        currentUser.username = usernameInput.value.trim();
+        currentUser.age = ageInput.value.trim();
+        currentUser.location = locationInput.value.trim();
+        
+        assignUserColor(); 
+        currentUser.colorClass = colorMap.get(currentUser.username) || ''; 
 
-            // '방명록' 표시
-            chatroomHeaderTitle.textContent = '방명록';
-            }
-            // 채팅방 내용을 맨 아래로 스크롤
-            chatroomContent.scrollTop = chatroomContent.scrollHeight;
-        }
-        isChatOpen = !isChatOpen; // 상태 토글
+        // 채팅방 내용을 맨 아래로 스크롤
+        chatroomContent.scrollTop = chatroomContent.scrollHeight;
     }
+    
+    // 항상 '방명록' 제목 표시
+    chatroomHeaderTitle.textContent = '방명록';
+    isChatOpen = !isChatOpen; 
+}
 
     // --- 채팅 메시지 전송 함수 (commentManager.js의 sendComment에서 파생) ---
     async function sendChatMessage() {
