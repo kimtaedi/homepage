@@ -148,11 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
             assignUserColor(); // 사용자 색상 할당 (다시 확인)
             currentUser.colorClass = colorMap.get(currentUser.username) || ''; // 할당된 색상 클래스 가져오기
 
-            // 닉네임이 있으면 환영 메시지 표시, 없으면 '방명록' 표시
-            if (currentUser.username) {
-                chatroomHeaderTitle.textContent = `${currentUser.username}님 환영합니다~!`;
-            } else {
-                chatroomHeaderTitle.textContent = '방명록';
+            // '방명록' 표시
+            chatroomHeaderTitle.textContent = '방명록';
             }
             // 채팅방 내용을 맨 아래로 스크롤
             chatroomContent.scrollTop = chatroomContent.scrollHeight;
