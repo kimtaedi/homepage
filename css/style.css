@@ -201,3 +201,16 @@ a {
     box-shadow: none; /* 그림자 제거 */
     overflow-y: auto !important;
 }
+
+/* --- Main 링크 스타일 (Main Link Styles) --- */
+#main-container {
+    cursor: pointer;           /* 마우스 올리면 손가락 모양 */
+    text-decoration: underline; /* 밑줄 */
+    color: var(--color-link);  /* 링크 색상 (CSS 변수 사용) */
+    transition: color 0.2s;    /* 호버 효과를 위한 전환 */
+}
+
+#main-container:hover {
+    color: var(--color-primary); /* 호버 시 강조 색상으로 변경 */
+    text-decoration: underline;
+}
