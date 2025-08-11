@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 'main' 링크 컨테이너 클릭 시 iframe src 변경
 mainDiv.addEventListener('click', function() {
-    myIframe.src = 'main.html';
+    window.location.reload();
 });
 
 
