@@ -130,6 +130,7 @@ input::-ms-clear { display: none; }
 a {
     color: inherit; /* 부모 요소의 색상을 상속 */
     text-decoration: none; /* 밑줄 제거 */
+       cursor: pointer; /* 모든 링크에 포인터 커서 적용 */
 }
 
 /* --- 메인 컨테이너 (Main Container) --- */
@@ -204,8 +205,10 @@ a {
 
 /* --- Main 링크 스타일 (Main Link Styles) --- */
 #main-container {
-    cursor: pointer;           /* 마우스 올리면 손가락 모양 */
-    text-decoration: underline; /* 밑줄 */
+    text-decoration: none;     /* 기본 상태에서는 밑줄 없음 */
     color: var(--color-link);  /* 링크 색상 (CSS 변수 사용) */
     transition: color 0.2s;    /* 호버 효과를 위한 전환 */
 }
+
+#main-container:hover {
+    text-decoration: underline;   /* 호버 시에만 밑줄 생성 */
