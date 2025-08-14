@@ -9,8 +9,8 @@
     top: 50%; /* 세로 중앙 */
     left: 50%; /* 가로 중앙 */
     transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
-    width: 5rem; /* 160px */
-    height: 5rem; /* 160px */
+    width: 10rem; /* 160px */
+    height: 10rem; /* 160px */
     z-index: 9999; /* 다른 요소 위에 최상단 */
     display: none; /* 초기에는 숨김 */
 }
