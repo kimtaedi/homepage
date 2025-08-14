@@ -307,9 +307,3 @@ mainDiv.addEventListener('click', function() {
     populateTagFilter(); // 태그 필터 드롭다운 채우기
     loadPosts(true); // 초기 게시물 로드 (첫 페이지 로딩)
 });
-
-// 페이지 로딩 완료되면 바로 스피너 숨기기
-window.onload = function() {
-    document.getElementById('loading-spinner').style.display = 'none';
-    document.getElementById('loading-overlay').style.display = 'none';
-};
