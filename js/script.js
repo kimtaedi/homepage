@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadingOverlay.style.display = 'none';
             }
             loadingPosts = false; // 로딩 중 플래그 해제
-             
+        }
     }
 
     /**
