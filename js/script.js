@@ -83,10 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadingOverlay.style.display = 'none';
             }
             loadingPosts = false; // 로딩 중 플래그 해제
-                // GIF 이미지도 함께 숨기기
-            document.getElementById('loading-spinner').style.display = 'none';
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
+             
     }
 
     /**
