@@ -46,10 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingOverlay.style.display = 'block';
         }
         loadingPosts = true; // 로딩 중 플래그 설정
-        // GIF 로딩 스피너 숨기기
-window.addEventListener('load', function() {
-    document.getElementById('loading-spinner').style.display = 'none';
-    document.getElementById('loading-overlay').style.display = 'none';
 
         try {
             // Apps Script에서 모든 게시물을 가져오는 요청을 보냅니다.
@@ -86,6 +82,9 @@ window.addEventListener('load', function() {
                 loadingOverlay.style.display = 'none';
             }
             loadingPosts = false; // 로딩 중 플래그 해제
+                // GIF 이미지도 함께 숨기기
+            document.getElementById('loading-spinner').style.display = 'none';
+            document.getElementById('loading-overlay').style.display = 'none';
         }
     }
 
