@@ -6,19 +6,6 @@ import { APPS_SCRIPT_URL, escapeHTML } from './utils.js'; // escapeHTML 추가
 // 필요한 모듈들을 가져옵니다.
 import { setupPostInteractions, createPostElement, highlightActivePost, setInitialContentAndHighlight } from './postInteractions.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 페이지 로딩 완료 시 스피너 숨기기
-    window.addEventListener('load', () => {
-        const spinner = document.getElementById('loading-spinner');
-        const overlay = document.getElementById('loading-overlay');
-        if (spinner) spinner.style.display = 'none';
-        if (overlay) overlay.style.display = 'none';
-    });
-
-    // HTML 요소들을 JavaScript 변수에 연결합니다.
-    const tagFilterSelect = document.getElementById('tag-filter');
-    // ... 나머지 기존 코드
-
 
 // DOMContentLoaded 이벤트: HTML 문서가 완전히 로드되고 파싱되면 실행됩니다.
 document.addEventListener('DOMContentLoaded', () => {
