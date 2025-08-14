@@ -39,3 +39,11 @@ dotlottie-wc {
     z-index: 9998; /* 스피너보다 아래 */
     display: none; /* 초기에는 숨김 */
 }
+
+/* GIF 이미지 스타일 */
+.loading-spinner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
