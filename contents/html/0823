@@ -1,0 +1,18 @@
+<div style="text-align: center; padding: 20px;">
+    <div style="max-width: 100%; overflow: hidden; border-radius: 10px;">
+        <iframe 
+            width="100%" 
+            height="315" 
+            src="https://www.youtube.com/embed/8al5cSQNmME?si=PgYT7U_vVkp0xfbR" 
+            title="YouTube video player" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen
+            style="border-radius: 10px;">
+        </iframe>
+    </div>
+    <p style="margin-top: 15px; color: #666;">
+        다들 비슷하겠지만 이 라이브를 기점으로 완전히 몰입함
+    </p>
+</div>
