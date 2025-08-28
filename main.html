@@ -49,7 +49,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Allows clicks to pass through to elements below */
+            /* pointer-events 제거하여 터치 이벤트 허용 */
         }
 
         #patternCanvas {
@@ -58,8 +58,7 @@
             left: 0;
             width: 100% !important;
             height: 100% !important;
-            pointer-events: none;
-            /* 모바일 터치 동작 차단 */
+            /* pointer-events 제거하여 터치 허용 */
             touch-action: none;
         }
 
@@ -284,6 +283,25 @@
             isDragging = false;
             return false;
         }
+
+        // 추가: body에 직접 터치 이벤트 리스너 등록
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 후 터치 이벤트 강제 등록
+            document.body.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                touchStarted();
+            }, { passive: false });
+            
+            document.body.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                touchMoved();
+            }, { passive: false });
+            
+            document.body.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                touchEnded();
+            }, { passive: false });
+        });
 
         // 터치 이벤트 (모바일 대응) - 개선된 버전
         let lastTouchX = 0;
