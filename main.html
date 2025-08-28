@@ -20,6 +20,15 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            /* 모바일 터치 동작 차단 */
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow: hidden;
         }
 
         .pattern-background {
@@ -50,6 +59,8 @@
             width: 100% !important;
             height: 100% !important;
             pointer-events: none;
+            /* 모바일 터치 동작 차단 */
+            touch-action: none;
         }
 
         /* Media Queries for Aspect Ratio Handling */
@@ -82,11 +93,11 @@
     <script>
         // Processing JSON 파라미터 적용
         const params = {
-            cols: 21,
-            rows: 20,
+            cols: 42,
+            rows: 40,
             blockW: 168,
             cellGap: 0,
-            cellGapV: 156,
+            cellGapV: 43,
             minH: 11,
             maxH: 174,
             stair: 0,
@@ -107,7 +118,7 @@
         let rotX = 0.549778938293457;
         let rotY = -0.1963496208190918;
         let rotZ = 0.3926990032196045;
-        const zoomLevel = 0.8; // 줌 레벨 증가로 화면 채움
+        const zoomLevel = 0.5; // 줌 레벨 감소
         const colorMode = 0; // Black only
         const panOffsetX = -200; // X축 오프셋 조정
         const panOffsetY = 0; // Y축 중앙 정렬
@@ -120,6 +131,9 @@
             canvas = createCanvas(windowWidth, windowHeight, WEBGL);
             canvas.parent('patternContainer');
             canvas.id('patternCanvas');
+            
+            // 3D 카메라 설정 개선
+            perspective(PI/3.0, width/height, 0.1, 5000);
         }
 
         function draw() {
@@ -243,6 +257,8 @@
 
         function windowResized() {
             resizeCanvas(windowWidth, windowHeight);
+            // 창 크기 변경시에도 perspective 재설정
+            perspective(PI/3.0, width/height, 0.1, 5000);
         }
 
         // 마우스 및 터치 인터랙션 (PC/모바일 대응)
@@ -269,23 +285,35 @@
             return false;
         }
 
-        // 터치 이벤트 (모바일 대응)
+        // 터치 이벤트 (모바일 대응) - 개선된 버전
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        
         function touchStarted() {
             isDragging = true;
+            if (touches.length > 0) {
+                lastTouchX = touches[0].x;
+                lastTouchY = touches[0].y;
+            }
             return false;
         }
 
         function touchMoved() {
             if (isDragging && touches.length === 1) {
-                // 이전 터치 위치 계산
-                let prevTouchX = touches[0].x - (mouseX - pmouseX);
-                let prevTouchY = touches[0].y - (mouseY - pmouseY);
+                let currentX = touches[0].x;
+                let currentY = touches[0].y;
+                
+                let deltaX = currentX - lastTouchX;
+                let deltaY = currentY - lastTouchY;
                 
                 // 터치 이동량으로 회전
-                rotX += (touches[0].y - prevTouchY) * 0.01;
-                rotY += (touches[0].x - prevTouchX) * 0.01;
+                rotX += deltaY * 0.01;
+                rotY += deltaX * 0.01;
                 
                 rotX = constrain(rotX, -PI/2, PI/2);
+                
+                lastTouchX = currentX;
+                lastTouchY = currentY;
             }
             return false;
         }
