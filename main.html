@@ -80,37 +80,40 @@
 
 
     <script>
-        // Processing 패턴 파라미터들 (고정값)
+        // Processing JSON 파라미터 적용
         const params = {
-            cols: 15,
-            rows: 25,
-            blockW: 45,
-            cellGap: 8,
-            cellGapV: 12,
-            minH: 20,
-            maxH: 80,
-            stair: 15,
-            amp: 150,
-            freq: 12,
-            blockAngle: 5,
-            moveX: 80,
-            moveY: 60,
-            moveMode: 1,
-            widthLR: 300,
-            widthCenter: 50,
-            widthCenterInv: 20,
-            waveDelayX: 25,
-            waveDelayY: 40
+            cols: 21,
+            rows: 20,
+            blockW: 168,
+            cellGap: 0,
+            cellGapV: 156,
+            minH: 11,
+            maxH: 174,
+            stair: 0,
+            amp: 140,
+            freq: 10,
+            blockAngle: 0,
+            moveX: 0,
+            moveY: 418,
+            moveMode: 2,
+            widthLR: 125,
+            widthCenter: 0,
+            widthCenterInv: 101,
+            waveDelayX: 16,
+            waveDelayY: 8
         };
 
-        // 고정 3D 회전 및 뷰 설정
-        const rotX = -0.4;
-        const rotY = 0.6;
-        const rotZ = 0.1;
-        const zoomLevel = 1.2;
-        const colorMode = 2; // Row stripes
+        // JSON에서 가져온 3D 회전 및 뷰 설정
+        let rotX = 0.549778938293457;
+        let rotY = -0.1963496208190918;
+        let rotZ = 0.3926990032196045;
+        const zoomLevel = 0.8; // 줌 레벨 증가로 화면 채움
+        const colorMode = 0; // Black only
+        const panOffsetX = -200; // X축 오프셋 조정
+        const panOffsetY = 0; // Y축 중앙 정렬
 
         let canvas;
+        let isDragging = false;
 
         function setup() {
             // 캔버스를 컨테이너에 생성
@@ -122,8 +125,9 @@
         function draw() {
             background(255); // 흰색 배경
             
-            // 3D 카메라 설정
+            // 3D 카메라 설정 (Processing과 동일한 좌표계)
             push();
+            translate(width/2 + panOffsetX, height/2 + panOffsetY, 0); // 화면 중앙 + 패닝
             scale(zoomLevel);
             rotateX(rotX);
             rotateY(rotY);
@@ -144,7 +148,7 @@
                     let h = (params.amp == 0) ? params.maxH : map(wave, -params.amp, params.amp, params.minH, params.maxH);
                     let stairOffset = y * params.stair;
                     
-                    // 움직임 애니메이션
+                    // 움직임 애니메이션 (Processing과 동일)
                     let moveWaveX = 0, moveWaveY = 0;
                     if (params.moveMode == 0) {
                         moveWaveX = sin(t * 0.8 + y * 0.2 + x * 0.15) * params.moveX;
@@ -218,7 +222,7 @@
                     let xpos = cumulativeXpos + moveWaveX + stairOffset;
                     let ypos = (y - params.rows / 2.0) * (params.maxH + params.cellGapV) + moveWaveY + (params.maxH - h) / 2;
                     
-                    // 3D 블록 렌더링
+                    // 3D 블록 렌더링 (Processing의 rect 방식으로)
                     push();
                     translate(xpos + actualBlockW / 2, ypos + h / 2, 0);
                     rotate(radians(params.blockAngle));
@@ -228,7 +232,8 @@
                     // 단일 색상 모드 - #0ebf00
                     fill("#0ebf00");
                     
-                    box(rectWidth, h, rectWidth);
+                    // Processing과 동일하게 rect 대신 box 사용하되 더 평면적으로
+                    box(rectWidth, h, 10); // Z축 깊이를 10으로 고정
                     pop();
                 }
             }
@@ -238,6 +243,56 @@
 
         function windowResized() {
             resizeCanvas(windowWidth, windowHeight);
+        }
+
+        // 마우스 및 터치 인터랙션 (PC/모바일 대응)
+        function mousePressed() {
+            isDragging = true;
+            return false; // 기본 이벤트 차단
+        }
+
+        function mouseDragged() {
+            if (isDragging) {
+                // Y 마우스 이동 → X축 회전
+                rotX += (mouseY - pmouseY) * 0.01;
+                // X 마우스 이동 → Y축 회전
+                rotY += (mouseX - pmouseX) * 0.01;
+                
+                // 회전 각도 제한 (너무 많이 돌지 않게)
+                rotX = constrain(rotX, -PI/2, PI/2);
+            }
+            return false;
+        }
+
+        function mouseReleased() {
+            isDragging = false;
+            return false;
+        }
+
+        // 터치 이벤트 (모바일 대응)
+        function touchStarted() {
+            isDragging = true;
+            return false;
+        }
+
+        function touchMoved() {
+            if (isDragging && touches.length === 1) {
+                // 이전 터치 위치 계산
+                let prevTouchX = touches[0].x - (mouseX - pmouseX);
+                let prevTouchY = touches[0].y - (mouseY - pmouseY);
+                
+                // 터치 이동량으로 회전
+                rotX += (touches[0].y - prevTouchY) * 0.01;
+                rotY += (touches[0].x - prevTouchX) * 0.01;
+                
+                rotX = constrain(rotX, -PI/2, PI/2);
+            }
+            return false;
+        }
+
+        function touchEnded() {
+            isDragging = false;
+            return false;
         }
     </script>
 
