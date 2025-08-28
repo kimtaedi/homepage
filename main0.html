@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Background HTML</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        /* CSS for the pattern background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            position: relative; /* Needed for z-index of content */
+            z-index: 1; /* Ensures content is above the pattern */
+            color: white; /* Example text color for content */
+            text-align: center;
+            height: 100vh !important; /* Ensure body takes full viewport height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pattern-background {
+            position: fixed; /* Fixes the pattern to the viewport */
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0; /* Makes the div cover the entire screen */
+            overflow: hidden; /* Hides any overflowing parts */
+            z-index: -99; /* Places it behind all other content */
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .pattern-foreground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through to elements below */
+        }
+
+        #patternCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            pointer-events: none;
+        }
+
+        /* Media Queries for Aspect Ratio Handling */
+        @media (min-aspect-ratio: 16/9) { /* If screen is wider than 16:9 */
+            .pattern-foreground {
+                height: 300% !important; /* Make pattern much taller */
+                top: -100% !important; /* And shift it up to center it vertically */
+            }
+        }
+
+        @media (max-aspect-ratio: 16/9) { /* If screen is taller than 16:9 */
+            .pattern-foreground {
+                width: 300% !important; /* Make pattern much wider */
+                left: -100% !important; /* And shift it left to center it horizontally */
+            }
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+</head>
+<body>
+
+    <div class="pattern-background">
+        <div class="pattern-foreground" id="patternContainer">
+            <!-- p5.js canvas will be inserted here -->
+        </div>
+    </div>
+
+
+
+    <script>
+        // Processing 패턴 파라미터들 (고정값)
+        const params = {
+            cols: 15,
+            rows: 25,
+            blockW: 45,
+            cellGap: 8,
+            cellGapV: 12,
+            minH: 20,
+            maxH: 80,
+            stair: 15,
+            amp: 150,
+            freq: 12,
+            blockAngle: 5,
+            moveX: 80,
+            moveY: 60,
+            moveMode: 1,
+            widthLR: 300,
+            widthCenter: 50,
+            widthCenterInv: 20,
+            waveDelayX: 25,
+            waveDelayY: 40
+        };
+
+        // 고정 3D 회전 및 뷰 설정
+        const rotX = -0.4;
+        const rotY = 0.6;
+        const rotZ = 0.1;
+        const zoomLevel = 1.2;
+        const colorMode = 2; // Row stripes
+
+        let canvas;
+
+        function setup() {
+            // 캔버스를 컨테이너에 생성
+            canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+            canvas.parent('patternContainer');
+            canvas.id('patternCanvas');
+        }
+
+        function draw() {
+            background(255); // 흰색 배경
+            
+            // 3D 카메라 설정
+            push();
+            scale(zoomLevel);
+            rotateX(rotX);
+            rotateY(rotY);
+            rotateZ(rotZ);
+            
+            noStroke();
+            
+            // Processing과 동일한 패턴 렌더링 로직
+            for (let x = 0; x < params.cols; x++) {
+                for (let y = 0; y < params.rows; y++) {
+                    let t = frameCount * 0.04 * params.freq * 0.07;
+                    
+                    // 셀별 파동 지연
+                    let delayX = x * (params.waveDelayX * 0.01);
+                    let delayY = y * (params.waveDelayY * 0.01);
+                    let wave = sin(t + delayY + delayX) * params.amp;
+                    
+                    let h = (params.amp == 0) ? params.maxH : map(wave, -params.amp, params.amp, params.minH, params.maxH);
+                    let stairOffset = y * params.stair;
+                    
+                    // 움직임 애니메이션
+                    let moveWaveX = 0, moveWaveY = 0;
+                    if (params.moveMode == 0) {
+                        moveWaveX = sin(t * 0.8 + y * 0.2 + x * 0.15) * params.moveX;
+                        moveWaveY = sin(t * 0.6 + y * 0.25 + x * 0.1) * params.moveY;
+                    } else if (params.moveMode == 1) {
+                        moveWaveX = sin(t * 0.8 + y * 0.3) * params.moveX;
+                        moveWaveY = sin(t * 0.6 + y * 0.3) * params.moveY;
+                    } else if (params.moveMode == 2) {
+                        moveWaveX = sin(t * 0.8 + x * 0.3) * params.moveX;
+                        moveWaveY = sin(t * 0.6 + x * 0.3) * params.moveY;
+                    }
+                    
+                    // 가로 폭 그라디언트 계산
+                    let widthMultiplier = 1.0;
+                    if (params.widthLR != 0 || params.widthCenter != 0 || params.widthCenterInv != 0) {
+                        let normalizedX = x / max(1, params.cols - 1);
+                        
+                        if (params.widthLR > 0) {
+                            let exponentialX = normalizedX * normalizedX * normalizedX;
+                            widthMultiplier += (exponentialX * params.widthLR * 0.025);
+                        } else if (params.widthLR < 0) {
+                            let leftBias = (1.0 - normalizedX);
+                            let exponentialLeft = leftBias * leftBias * leftBias;
+                            widthMultiplier += (exponentialLeft * abs(params.widthLR) * 0.025);
+                        }
+                        
+                        if (params.widthCenter != 0) {
+                            let centerDistance = abs(normalizedX - 0.5) * 2.0;
+                            widthMultiplier += (centerDistance * params.widthCenter * 0.01);
+                        }
+                        
+                        if (params.widthCenterInv != 0) {
+                            let centerDistance = abs(normalizedX - 0.5) * 2.0;
+                            widthMultiplier += ((1.0 - centerDistance) * params.widthCenterInv * 0.01);
+                        }
+                    }
+                    widthMultiplier = constrain(widthMultiplier, 0.01, 50.0);
+                    
+                    let actualBlockW = params.blockW * widthMultiplier;
+                    
+                    // X 위치 누적 계산 (Processing과 동일)
+                    let cumulativeXpos = -(params.cols * params.blockW + (params.cols - 1) * params.cellGap) / 2.0;
+                    for (let i = 0; i < x; i++) {
+                        let tempMultiplier = 1.0;
+                        if (params.widthLR != 0 || params.widthCenter != 0 || params.widthCenterInv != 0) {
+                            let tempNormalizedX = i / max(1, params.cols - 1);
+                            
+                            if (params.widthLR > 0) {
+                                let exponentialX = tempNormalizedX * tempNormalizedX * tempNormalizedX;
+                                tempMultiplier += (exponentialX * params.widthLR * 0.025);
+                            } else if (params.widthLR < 0) {
+                                let leftBias = (1.0 - tempNormalizedX);
+                                let exponentialLeft = leftBias * leftBias * leftBias;
+                                tempMultiplier += (exponentialLeft * abs(params.widthLR) * 0.025);
+                            }
+                            
+                            if (params.widthCenter != 0) {
+                                let centerDistance = abs(tempNormalizedX - 0.5) * 2.0;
+                                tempMultiplier += (centerDistance * params.widthCenter * 0.01);
+                            }
+                            
+                            if (params.widthCenterInv != 0) {
+                                let centerDistance = abs(tempNormalizedX - 0.5) * 2.0;
+                                tempMultiplier += ((1.0 - centerDistance) * params.widthCenterInv * 0.01);
+                            }
+                        }
+                        tempMultiplier = constrain(tempMultiplier, 0.01, 50.0);
+                        cumulativeXpos += (params.blockW * tempMultiplier) + (params.cellGap * tempMultiplier);
+                    }
+                    
+                    let xpos = cumulativeXpos + moveWaveX + stairOffset;
+                    let ypos = (y - params.rows / 2.0) * (params.maxH + params.cellGapV) + moveWaveY + (params.maxH - h) / 2;
+                    
+                    // 3D 블록 렌더링
+                    push();
+                    translate(xpos + actualBlockW / 2, ypos + h / 2, 0);
+                    rotate(radians(params.blockAngle));
+                    
+                    let rectWidth = params.cellGap == 0 ? actualBlockW : actualBlockW - 2;
+                    
+                    // 단일 색상 모드 - #0ebf00
+                    fill("#0ebf00");
+                    
+                    box(rectWidth, h, rectWidth);
+                    pop();
+                }
+            }
+            
+            pop();
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+
+</body>
+</html>
