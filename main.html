@@ -5,14 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar - 김태디의 통통배</title>
     <style>
+        /* --- 웹 폰트 정의 (Web Font Definition) --- */
+        @font-face {
+            font-family: 'Happiness-Sans-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2205@1.0/Happiness-Sans-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            unicode-range: U+AC00-D7A3; /* 한글 유니코드 범위 */
+        }
+
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Happiness-Sans-Regular', Arial, sans-serif;
             background: white;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
         }
@@ -23,7 +32,7 @@
             max-width: 100%;
             background: white;
             border-radius: 0;
-            padding: 0;
+            padding: 0 15px;
             box-shadow: none;
             box-sizing: border-box;
         }
@@ -34,7 +43,7 @@
                 padding: 0;
             }
             .calendar-container {
-                padding: 0;
+                padding: 0 20px;
             }
         }
 
@@ -103,7 +112,7 @@
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 4px;
         }
 
         .calendar-day {
@@ -115,10 +124,10 @@
             padding: 8px 4px;
             font-size: 16px;
             border-radius: 0;
-            cursor: pointer;
+            cursor: default;
             transition: all 0.2s;
             position: relative;
-            min-height: 60px;
+            min-height: 50px;
         }
         
         .calendar-day-number {
@@ -146,11 +155,11 @@
         /* PC 화면 - 더 큰 폰트 */
         @media (min-width: 768px) {
             .calendar-days {
-                gap: 10px;
+                gap: 5px;
             }
             .calendar-day {
                 font-size: 18px;
-                min-height: 80px;
+                min-height: 70px;
                 padding: 10px 6px;
             }
             .calendar-day-title {
@@ -167,22 +176,22 @@
         }
 
         .calendar-day.today {
-            border: 2px solid #52b535;
+            border: 2px solid #0EBF00;
             font-weight: bold;
         }
 
         .calendar-day.has-post {
-            background: #52b535;
+            background: #0EBF00;
             color: white;
             font-weight: bold;
         }
 
         .calendar-day.has-post:hover {
-            background: #459629;
+            background: #0CA600;
         }
 
         .calendar-day.selected {
-            background: #52b535;
+            background: #0EBF00;
             color: white;
             opacity: 0.8;
         }
@@ -199,7 +208,7 @@
 
     <script>
         // Apps Script URL
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiFB1-WHX2C6lIPRLNgZvwFwdIq_TZtpiU7mnzTlDbPbFx-YnjwkjFGS6v364AUn8/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/library/d/1tjav3ZH0cAPzuYRIkFpN7Zga0kmB7JWOxTfAOiNmhDtHZdqJGpoHi8ex/3';
 
         class Calendar {
             constructor(containerId) {
@@ -342,14 +351,8 @@
                     this.render();
                 });
 
-                this.container.querySelectorAll('.calendar-day:not(.other-month)').forEach(dayEl => {
-                    dayEl.addEventListener('click', (e) => {
-                        const date = e.currentTarget.dataset.date;
-                        if (date) {
-                            this.onDateClick(date);
-                        }
-                    });
-                });
+                // 날짜 클릭 이벤트 제거됨
+            }
             }
 
             onDateClick(dateStr) {
