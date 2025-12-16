@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar Preview</title>
+    <title>Calendar - 김태디의 통통배</title>
     <style>
         body {
             margin: 0;
@@ -197,41 +197,57 @@
     </div>
 
     <script>
-        // 테스트용 더미 데이터
-        const DUMMY_DATA = {
-            '2025-12-01': 2,
-            '2025-12-10': 1,
-            '2025-12-15': 3,
-            '2025-12-16': 1
-        };
-        
-        // 테스트용 게시물 상세 데이터
-        const DUMMY_POSTS = {
-            '2025-12-01': [
-                { title: '첫 번째 게시물', content: '12월의 시작...' },
-                { title: '두 번째 게시물', content: '오늘은 좋은 날...' }
-            ],
-            '2025-12-10': [
-                { title: '중간 점검', content: '한 해를 돌아보며...' }
-            ],
-            '2025-12-15': [
-                { title: '크리스마스 준비', content: '선물 리스트 작성' },
-                { title: '연말 계획', content: '내년 목표 세우기' },
-                { title: '독서 기록', content: '올해 읽은 책들' }
-            ],
-            '2025-12-16': [
-                { title: '오늘의 일기', content: '캘린더 기능 추가...' }
-            ]
-        };
+        // Apps Script URL
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySKtekRkLfl7LGG8_V4g5HzTN-oVOb5Nstf-mGm8upCtGTvRLM9d7xG9OQIpkPKAgP/exec';
 
         class Calendar {
             constructor(containerId) {
                 this.container = document.getElementById(containerId);
                 this.currentDate = new Date();
                 this.selectedDate = null;
-                this.postsData = DUMMY_DATA;
+                this.postsData = {}; // {날짜: 게시물개수}
+                this.postsByDate = {}; // {날짜: [게시물들]}
                 
+                this.init();
+            }
+
+            async init() {
+                console.log('캘린더 초기화 시작');
+                await this.loadPostsData();
                 this.render();
+            }
+
+            async loadPostsData() {
+                try {
+                    console.log('게시물 데이터 로드 시도:', APPS_SCRIPT_URL);
+                    const response = await fetch(`${APPS_SCRIPT_URL}?action=getPostsForCalendar`);
+                    const data = await response.json();
+                    
+                    console.log('받은 데이터:', data);
+                    
+                    this.postsData = {};
+                    this.postsByDate = {};
+                    
+                    if (data.posts && Array.isArray(data.posts)) {
+                        data.posts.forEach(post => {
+                            const dateStr = post.date;
+                            if (dateStr) {
+                                // 게시물 개수 집계
+                                this.postsData[dateStr] = (this.postsData[dateStr] || 0) + 1;
+                                
+                                // 게시물 상세 저장
+                                if (!this.postsByDate[dateStr]) {
+                                    this.postsByDate[dateStr] = [];
+                                }
+                                this.postsByDate[dateStr].push(post);
+                            }
+                        });
+                    }
+                    console.log('처리된 게시물 데이터:', this.postsData);
+                    console.log('날짜별 게시물:', this.postsByDate);
+                } catch (error) {
+                    console.error('게시물 데이터 로드 실패:', error);
+                }
             }
 
             render() {
@@ -260,6 +276,7 @@
                     </div>
                 `;
 
+                console.log('캘린더 렌더링 완료');
                 this.attachEvents();
             }
 
@@ -287,7 +304,7 @@
                 for (let day = 1; day <= lastDate; day++) {
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const postCount = this.postsData[dateStr] || 0;
-                    const posts = DUMMY_POSTS[dateStr] || [];
+                    const posts = this.postsByDate[dateStr] || [];
                     
                     let classes = ['calendar-day'];
                     if (dateStr === todayStr) classes.push('today');
@@ -326,7 +343,7 @@
 
                 this.container.querySelectorAll('.calendar-day:not(.other-month)').forEach(dayEl => {
                     dayEl.addEventListener('click', (e) => {
-                        const date = e.target.dataset.date;
+                        const date = e.currentTarget.dataset.date;
                         if (date) {
                             this.onDateClick(date);
                         }
@@ -351,7 +368,7 @@
                 const postList = document.getElementById('post-list');
                 const postsContainer = document.getElementById('posts-container');
                 
-                const posts = DUMMY_POSTS[dateStr];
+                const posts = this.postsByDate[dateStr];
                 
                 if (!posts || posts.length === 0) {
                     postList.style.display = 'none';
@@ -360,15 +377,15 @@
                 
                 postList.style.display = 'block';
                 postsContainer.innerHTML = posts.map(post => `
-                    <div style="border-bottom: 1px solid #ddd; padding: 10px 0; last-child:border-bottom: none;">
+                    <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
                         <div style="font-weight: bold; margin-bottom: 5px; font-size: 14px;">${post.title}</div>
-                        <div style="color: #666; font-size: 13px;">${post.content}</div>
                     </div>
                 `).join('');
             }
         }
 
         // 캘린더 초기화
+        console.log('스크립트 시작');
         new Calendar('calendar');
     </script>
 </body>
