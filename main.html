@@ -7,7 +7,7 @@
     <style>
         body {
             margin: 0;
-            padding: 10px;
+            padding: 0;
             font-family: Arial, sans-serif;
             background: white;
             display: flex;
@@ -22,19 +22,19 @@
             width: 100%;
             max-width: 100%;
             background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
             box-sizing: border-box;
         }
         
         /* PC 화면 */
         @media (min-width: 768px) {
             body {
-                padding: 20px;
+                padding: 0;
             }
             .calendar-container {
-                padding: 25px;
+                padding: 0;
             }
         }
 
@@ -114,7 +114,7 @@
             justify-content: flex-start;
             padding: 8px 4px;
             font-size: 16px;
-            border-radius: 6px;
+            border-radius: 0;
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
@@ -167,23 +167,24 @@
         }
 
         .calendar-day.today {
-            border: 2px solid #4a90e2;
+            border: 2px solid #52b535;
             font-weight: bold;
         }
 
         .calendar-day.has-post {
-            background: #4a90e2;
+            background: #52b535;
             color: white;
             font-weight: bold;
         }
 
         .calendar-day.has-post:hover {
-            background: #357abd;
+            background: #459629;
         }
 
         .calendar-day.selected {
-            background: #2ecc71;
+            background: #52b535;
             color: white;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -191,14 +192,14 @@
     <div id="calendar">로딩 중...</div>
     
     <!-- 선택된 날짜의 게시물 목록 -->
-    <div id="post-list" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; display: none;">
+    <div id="post-list" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 0; display: none;">
         <h3 style="margin: 0 0 10px 0; font-size: 16px;">게시물</h3>
         <div id="posts-container"></div>
     </div>
 
     <script>
         // Apps Script URL
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiFB1-WHX2C6lIPRLNgZvwFwdIq_TZtpiU7mnzTlDbPbFx-YnjwkjFGS6v364AUn8/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySKtekRkLfl7LGG8_V4g5HzTN-oVOb5Nstf-mGm8upCtGTvRLM9d7xG9OQIpkPKAgP/exec';
 
         class Calendar {
             constructor(containerId) {
