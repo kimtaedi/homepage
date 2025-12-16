@@ -1,82 +1,263 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Background HTML</title>
+    <title>Calendar Preview</title>
     <style>
-        /* CSS for the video background */
         body {
             margin: 0;
-            padding: 0;
+            padding: 20px;
             font-family: Arial, sans-serif;
-            position: relative; /* Needed for z-index of content */
-            z-index: 1; /* Ensures content is above the video */
-            color: white; /* Example text color for content */
-            text-align: center;
-            height: 100vh !important; /* Ensure body takes full viewport height */
+            background: white;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* 캘린더 컨테이너 */
+        .calendar-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .video-background {
-            position: fixed; /* Fixes the video to the viewport */
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0; /* Makes the div cover the entire screen */
-            overflow: hidden; /* Hides any overflowing parts of the video */
-            z-index: -99; /* Places it behind all other content, from CodePen */
-            width: 100% !important; /* Retaining your !important */
-            height: 100% !important; /* Retaining your !important */
+        /* 캘린더 헤더 */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        /* This wrapper helps in managing the video's aspect ratio and positioning */
-        .video-foreground {
-            position: absolute; /* Positions relative to .video-background */
-            top: 0;
-            left: 0;
-            width: 100%; /* Initial fill of its parent */
-            height: 100%; /* Initial fill of its parent */
-            pointer-events: none; /* Allows clicks to pass through to elements below */
+        .calendar-header button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #666;
         }
 
-        .video-background iframe {
-            position: absolute; /* Positions relative to .video-foreground */
-            top: 0;
-            left: 0;
-            width: 100%; /* Fills the .video-foreground container */
-            height: 100%; /* Fills the .video-foreground container */
-            pointer-events: none; /* Retaining from your original and consistent with CodePen */
+        .calendar-header button:hover {
+            color: #000;
         }
 
-        /* Media Queries for Aspect Ratio Handling (from CodePen) */
-        @media (min-aspect-ratio: 16/9) { /* If screen is wider than 16:9 */
-            .video-foreground {
-                height: 300% !important; /* Make video much taller */
-                top: -100% !important; /* And shift it up to center it vertically */
-            }
+        .calendar-header .current-month {
+            font-size: 16px;
+            font-weight: bold;
         }
 
-        @media (max-aspect-ratio: 16/9) { /* If screen is taller than 16:9 */
-            .video-foreground {
-                width: 300% !important; /* Make video much wider */
-                left: -100% !important; /* And shift it left to center it horizontally */
-            }
+        /* 요일 헤더 */
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .calendar-weekdays div {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            padding: 8px 0;
+        }
+
+        /* 날짜 그리드 */
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: #f0f0f0;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #4a90e2;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-post {
+            background: #4a90e2;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-post:hover {
+            background: #357abd;
+        }
+
+        .calendar-day.has-post::after {
+            content: attr(data-count);
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 9px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day.selected {
+            background: #2ecc71;
+            color: white;
         }
     </style>
-     <link rel="icon" type="image/x-icon" href="./favicon.ico">
 </head>
 <body>
+    <div id="calendar">로딩 중...</div>
 
-    <div class="video-background">
-        <video autoplay loop muted playsinline id="backgroundVideo" class="video-foreground">
-            <source src="videos/pattern.webm" type="video/webm">
-        Your browser does not support the video tag.
-        </video>
-    </div>
+    <script>
+        // 테스트용 더미 데이터
+        const DUMMY_DATA = {
+            '2024-12-01': 2,
+            '2024-12-10': 1,
+            '2024-12-15': 3,
+            '2024-12-16': 1
+        };
 
+        class Calendar {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.currentDate = new Date();
+                this.selectedDate = null;
+                this.postsData = DUMMY_DATA;
+                
+                this.render();
+            }
+
+            render() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                
+                this.container.innerHTML = `
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <button class="prev-month">◀</button>
+                            <div class="current-month">${year}년 ${month + 1}월</div>
+                            <button class="next-month">▶</button>
+                        </div>
+                        <div class="calendar-weekdays">
+                            <div>일</div>
+                            <div>월</div>
+                            <div>화</div>
+                            <div>수</div>
+                            <div>목</div>
+                            <div>금</div>
+                            <div>토</div>
+                        </div>
+                        <div class="calendar-days">
+                            ${this.generateDays(year, month)}
+                        </div>
+                    </div>
+                `;
+
+                this.attachEvents();
+            }
+
+            generateDays(year, month) {
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const prevLastDay = new Date(year, month, 0);
+                
+                const firstDayWeek = firstDay.getDay();
+                const lastDate = lastDay.getDate();
+                const prevLastDate = prevLastDay.getDate();
+                
+                const today = new Date();
+                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                
+                let html = '';
+                
+                // 이전 달 날짜들
+                for (let i = firstDayWeek - 1; i >= 0; i--) {
+                    const day = prevLastDate - i;
+                    html += `<div class="calendar-day other-month">${day}</div>`;
+                }
+                
+                // 현재 달 날짜들
+                for (let day = 1; day <= lastDate; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const postCount = this.postsData[dateStr] || 0;
+                    
+                    let classes = ['calendar-day'];
+                    if (dateStr === todayStr) classes.push('today');
+                    if (postCount > 0) classes.push('has-post');
+                    
+                    html += `<div class="${classes.join(' ')}" data-date="${dateStr}" data-count="${postCount}">${day}</div>`;
+                }
+                
+                // 다음 달 날짜들
+                const totalCells = Math.ceil((firstDayWeek + lastDate) / 7) * 7;
+                const remainingCells = totalCells - (firstDayWeek + lastDate);
+                for (let day = 1; day <= remainingCells; day++) {
+                    html += `<div class="calendar-day other-month">${day}</div>`;
+                }
+                
+                return html;
+            }
+
+            attachEvents() {
+                this.container.querySelector('.prev-month').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.render();
+                });
+
+                this.container.querySelector('.next-month').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.render();
+                });
+
+                this.container.querySelectorAll('.calendar-day:not(.other-month)').forEach(dayEl => {
+                    dayEl.addEventListener('click', (e) => {
+                        const date = e.target.dataset.date;
+                        if (date) {
+                            this.onDateClick(date);
+                        }
+                    });
+                });
+            }
+
+            onDateClick(dateStr) {
+                console.log('선택된 날짜:', dateStr);
+                this.selectedDate = dateStr;
+                
+                this.container.querySelectorAll('.calendar-day').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                this.container.querySelector(`[data-date="${dateStr}"]`)?.classList.add('selected');
+            }
+        }
+
+        // 캘린더 초기화
+        new Calendar('calendar');
+    </script>
 </body>
 </html>
